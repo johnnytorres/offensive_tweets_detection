@@ -2,6 +2,7 @@ import os
 import logging
 import argparse
 import numpy as np
+import pandas as pd
 import tensorflow as tf
 
 from keras_preprocessing.text import Tokenizer
@@ -14,11 +15,9 @@ class EmbeddingsBuilder:
     def __init__(self, args):
         logging.info('initializing...')
         self.args = args
-        self.dataset = DataLoader(self.args)
-        self.embeddings_path = args.embeddings_path
-        self.small_embeddings_path = os.path.split(self.embeddings_path)[1]
-        self.train_dir = os.path.dirname(self.args.train_path)
-        self.small_embeddings_path = os.path.join(self.train_dir, self.small_embeddings_path)
+        self.embeddings_path = args.embeddings_file
+        embeddings_name = os.path.split(self.embeddings_path)[1]
+        self.small_embeddings_path = os.path.join(self.args.output_dir, embeddings_name)
         logging.info('initializing...[ok]')
 
     def build_embedding(self, vocab_dict):
@@ -46,15 +45,14 @@ class EmbeddingsBuilder:
 
     def run(self):
 
-        self.dataset.load()
+        X = None
 
-        X = self.dataset.X_labeled[self.args.text_field].values
-
-        if self.dataset.X_unlabeled is not None:
-            X = np.append(X, self.dataset.X_unlabeled[self.args.text_field].values, axis=0)
-
-        if self.dataset.X_test is not None:
-            X = np.append(X, self.dataset.X_test[self.args.text_field].values, axis=0)
+        for data_file in self.args.data_files:
+            ds = pd.read_csv(data_file, sep='\t', keep_default_na=False)
+            if X is None:
+                X = ds[self.args.text_field].values
+            else:
+                X = np.append(X, ds[self.args.text_field].values, axis=0)
 
         tokenizer = Tokenizer()
         tokenizer.fit_on_texts(X)
@@ -62,22 +60,15 @@ class EmbeddingsBuilder:
         self.build_embedding(tokenizer.word_index)
 
 
-
-
-
 if __name__ == '__main__':
     logging.basicConfig(format='%(asctime)s %(message)s', level=logging.DEBUG)
     logging.info('initializing task...')
     parser = argparse.ArgumentParser()
-    parser.add_argument('--train-path', type=lambda x:os.path.expanduser(x))
-    parser.add_argument('--unlabeled-path', type=lambda x: os.path.expanduser(x))
-    parser.add_argument('--test-path', type=lambda x: os.path.expanduser(x))
-    parser.add_argument('--embeddings-path', type=str, default=None)
+    parser.add_argument('--data-files', type=lambda x:os.path.expanduser(x), nargs='+')
+    parser.add_argument('--embeddings-file', type=lambda x:os.path.expanduser(x))
+    parser.add_argument('--output-dir', type=lambda x: os.path.expanduser(x))
     parser.add_argument('--num-unlabeled', type=int, default=0)
     parser.add_argument('--text-field', type=str)
-    parser.add_argument('--labels', type=lambda x: x.split(','))
-    parser.add_argument('--use-allfeats', action='store_true', default=False)
-    parser.add_argument('--predict', action='store_true', default=True)
     builder = EmbeddingsBuilder(args=parser.parse_args())
     builder.run()
     logging.info('task finished...[ok]')
