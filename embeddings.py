@@ -3,12 +3,8 @@ import logging
 import argparse
 import numpy as np
 import pandas as pd
-import tensorflow as tf
-
 from keras_preprocessing.text import Tokenizer
 from tqdm import tqdm
-
-from data import DataLoader
 
 
 class EmbeddingsBuilder:
@@ -29,8 +25,8 @@ class EmbeddingsBuilder:
         num_found = 0
 
         with open(self.small_embeddings_path, 'w') as out_file:
-            with tf.gfile.GFile(self.embeddings_path) as f:
-                header =next(f)
+            with open(self.embeddings_path, 'r') as f:
+                header = next(f)
                 num_embeddings, embeddings_dim = header.split(' ')
                 num_embeddings = int(num_embeddings)
                 out_file.write(header)
@@ -41,7 +37,7 @@ class EmbeddingsBuilder:
                         num_found += 1
                         out_file.write(line)
 
-        tf.logging.info("Found embeddings for {} out of {} words in vocabulary".format(num_found, num_words))
+        logging.info("Found embeddings for {} out of {} words in vocabulary".format(num_found, num_words))
 
     def run(self):
 

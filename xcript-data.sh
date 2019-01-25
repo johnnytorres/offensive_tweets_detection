@@ -3,6 +3,8 @@
 
 DATA_DIR=../data/offense_eval
 EMBEDDINGS_DIR=../embeddings/fasttext
+TRAINING_DIR=${DATA_DIR}/training
+TEST_DIR=${DATA_DIR}/test
 
 mkdir -p ${DATA_DIR}
 mkdir -p ${EMBEDDINGS_DIR}
@@ -14,21 +16,35 @@ wget -O ${EMBEDDINGS_DIR}/crawl-300d-2M.vec.zip https://s3-us-west-1.amazonaws.c
 unzip -d ${EMBEDDINGS_DIR} ${EMBEDDINGS_DIR}/crawl-300d-2M.vec.zip
 
 python -m preprocessing.text_tokenizer \
-    --input-file=${DATA_DIR}/training/offenseval-training-v1.tsv \
-    --output-file=${DATA_DIR}/training/offenseval_preprocessed.tsv \
+    --input-file=${TRAINING_DIR}/offenseval-training-v1.tsv \
+    --output-file=${TRAINING_DIR}/offenseval_preprocessed.tsv \
     --language=english \
     --text-field=tweet
 
 python -m preprocessing.text_tokenizer \
-    --input-file=${DATA_DIR}/test/testset-taska.tsv \
-    --output-file=${DATA_DIR}/test/testset_taska_preprocessed.tsv \
+    --input-file=${TEST_DIR}/testset-taska.tsv \
+    --output-file=${TEST_DIR}/testset_taska_preprocessed.tsv \
     --language=english \
     --text-field=tweet
 
+python -m preprocessing.text_tokenizer \
+    --input-file=${TEST_DIR}/testset-taskb.tsv \
+    --output-file=${TEST_DIR}/testset_taskb_preprocessed.tsv \
+    --language=english \
+    --text-field=tweet
+
+python -m preprocessing.text_tokenizer \
+    --input-file=${TEST_DIR}/testset-taskc.tsv \
+    --output-file=${TEST_DIR}/testset_taskc_preprocessed.tsv \
+    --language=english \
+    --text-field=tweet
 
 python -m embeddings \
-    --train-path=${DATA_DIR}/training/offenseval_preprocessed.tsv \
-    --test-path=${DATA_DIR}/test/testset_taska_preprocessed.tsv \
+    --data-files \
+    ${TRAINING_DIR}/offenseval-training-v1.tsv \
+    ${TEST_DIR}/testset-taska.tsv \
+    ${TEST_DIR}/testset-taskb.tsv \
     --embeddings-path=${EMBEDDINGS_DIR}/crawl-300d-2M.vec \
+    --output-dir=${TRAINING_DIR}/crawl-300d-2M.vec \
     --text-field=tweet \
     --labels=subtask_a
