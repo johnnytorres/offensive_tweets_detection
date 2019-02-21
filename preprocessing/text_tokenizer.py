@@ -22,6 +22,8 @@ import preprocessor
 #     preprocessor.OPT.NUMBER
 # )
 
+nltk.download('stopwords')
+
 class DataTokenizer:
 	def __init__(self, args):
 		self.args = args
