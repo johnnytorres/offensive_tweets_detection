@@ -1,9 +1,10 @@
 #!/usr/bin/env bash
 
+BASE_DIR=$([ "$1" = "" ] && echo "." || echo "$1" )
 
 # CHANGE THIS DIRECTORIES
-DATA_DIR=../data/offens_eval
-EMBEDDINGS_DIR=../embeddings/fasttext
+DATA_DIR=${BASE_DIR}/data/offens_eval
+EMBEDDINGS_DIR=${BASE_DIR}/embeddings/fasttext
 
 TRAINING_DIR=${DATA_DIR}/training
 TEST_DIR=${DATA_DIR}/test
@@ -16,6 +17,20 @@ unzip -d ${DATA_DIR} ${DATA_DIR}/offense_eval.zip
 
 wget -O ${EMBEDDINGS_DIR}/crawl-300d-2M.vec.zip https://s3-us-west-1.amazonaws.com/fasttext-vectors/crawl-300d-2M.vec.zip
 unzip -d ${EMBEDDINGS_DIR} ${EMBEDDINGS_DIR}/crawl-300d-2M.vec.zip
+
+# embeddings with raw data
+python -m preprocessing.embeddings \
+    --data-files \
+    ${TRAINING_DIR}/offenseval-training-v1.tsv \
+    ${TEST_DIR}/testset-taska.tsv \
+    ${TEST_DIR}/testset-taskb.tsv \
+    ${TEST_DIR}/testset-taskc.tsv \
+    --embeddings-file=${EMBEDDINGS_DIR}/crawl-300d-2M.vec \
+    --output-dir=${TRAINING_DIR} \
+    --text-field=tweet
+
+
+# PREPROCESSING TWEETS
 
 python -m preprocessing.text_tokenizer \
     --input-file=${TRAINING_DIR}/offenseval-training-v1.tsv \
@@ -43,23 +58,14 @@ python -m preprocessing.text_tokenizer \
 
 #EMBEDDINGS
 
-# embeddings, first with raw data
-python -m preprocessing.embeddings \
-    --data-files \
-    ${TRAINING_DIR}/offenseval-training-v1.tsv \
-    ${TEST_DIR}/testset-taska.tsv \
-    ${TEST_DIR}/testset-taskb.tsv \
-    ${TEST_DIR}/testset-taskc.tsv \
-    --embeddings-file=${EMBEDDINGS_DIR}/crawl-300d-2M.vec \
-    --output-dir=${TRAINING_DIR} \
-    --text-field=tweet
+
 
 # embeddings, first with preprocessed data
-python -m embeddings \
-    --data-files \
-    ${TRAINING_DIR}/offenseval-training-v1.tsv \
-    ${TEST_DIR}/testset-taska.tsv \
-    ${TEST_DIR}/testset-taskb.tsv \
-    --embeddings-file=${EMBEDDINGS_DIR}/crawl-300d-2M.vec \
-    --output-dir=${TRAINING_DIR} \
-    --text-field=tweet \
+#python -m embeddings \
+#    --data-files \
+#    ${TRAINING_DIR}/offenseval-training-v1.tsv \
+#    ${TEST_DIR}/testset-taska.tsv \
+#    ${TEST_DIR}/testset-taskb.tsv \
+#    --embeddings-file=${EMBEDDINGS_DIR}/crawl-300d-2M.vec \
+#    --output-dir=${TRAINING_DIR} \
+#    --text-field=tweet \
