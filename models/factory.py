@@ -1,4 +1,3 @@
-from models.semisupervised_kmeans import SemisupervisedKmeansModel
 from models.supervised_bilstm import BiLstmModel
 from models.supervised_cnn import CnnModel
 from models.supervised_cnn_lstm import CnnLstmModel
@@ -20,5 +19,4 @@ def get_model(task):
         return BiLstmModel(task)
     if task.args.model == 'cnnlstm':
         return CnnLstmModel(task)
-    if task.args.model == 'semikmeans':
-        return SemisupervisedKmeansModel(task)
+    raise NotImplemented('model not implemented')

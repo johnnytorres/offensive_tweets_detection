@@ -10,7 +10,7 @@ from argparse import ArgumentParser
 from sklearn.metrics import precision_recall_fscore_support
 from sklearn.model_selection import KFold
 from sklearn.model_selection import train_test_split
-from data import DataLoader
+from preprocessing.csv_reader import DataLoader
 from models.factory import get_model
 
 
@@ -22,14 +22,10 @@ class ClassificationTask:
         self.args.TEXT_COL = 1
         self.dataset = DataLoader(self.args)
         self.output_path = args.output_file
-
-        # if os.path.exists(self.output_path):
-        #     os.remove(self.output_path)
-
-        print("PARAMS: {}".format(self.args))
-
+        self.write_header = not self.args.no_output_headers
         # set random state
         np.random.seed(args.random_state)
+        print("PARAMS: {}".format(self.args))
 
     def split_dataset(self):
 
@@ -73,7 +69,7 @@ class ClassificationTask:
             model.train(X_kfold, y_kfold)
             y_pred = model.predict(X_valid)
 
-            score = precision_recall_fscore_support(y_valid, y_pred, average='macro')
+            score = precision_recall_fscore_support(y_valid, y_pred, average='weighted')
             score = score[2] #F1
             scores.append(score)
             print(f"CV {k} F1: {score}")
@@ -108,10 +104,10 @@ class ClassificationTask:
             cols.extend(self.dataset.y_cols)
             results = self.dataset.X_test[cols]
             results = self.dataset.decode_features(results, labels)
-            results.to_csv(self.output_path, index=False, header=None)
+            results.to_csv(self.output_path, index=False, header=self.write_header)
 
         else:
-            score = precision_recall_fscore_support(y_test, y_pred, average='macro')
+            score = precision_recall_fscore_support(y_test, y_pred, average='weighted')
             score = score[2] # f1
             scores = np.array(scores)
             print(f"CV F1: %0.2f (+/- %0.2f)" % (scores.mean(), scores.std() * 2))
@@ -152,6 +148,7 @@ if __name__ == '__main__':
     parser.add_argument('--unlabeled-path', type=lambda x: os.path.expanduser(x))
     parser.add_argument('--test-path', type=lambda x: os.path.expanduser(x))
     parser.add_argument('--labels', type=lambda x: x.split(','))
+    parser.add_argument('--field-sep', type=str, default=',')
     parser.add_argument('--text-field', type=str)
     parser.add_argument('--use-allfeats', action='store_true')
     parser.add_argument('--num-unlabeled', type=int, default=0)
@@ -161,6 +158,7 @@ if __name__ == '__main__':
     parser.add_argument('--embeddings-path', type=str, default=None)
     parser.add_argument('--random-state', type=int, default=1)
     parser.add_argument('--predict', action='store_true')
+    parser.add_argument('--no-output-headers', action='store_true')
     parser.add_argument('--output-file', type=lambda x:os.path.expanduser(x), default='../results/predictions.csv')
     parser.add_argument('--models')
     args  = parser.parse_args()

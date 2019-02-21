@@ -5,7 +5,7 @@ from sklearn.linear_model import LogisticRegression
 from sklearn.multiclass import OneVsRestClassifier
 from sklearn.pipeline import Pipeline
 
-from models.base_supervised import SupervisedBaseModel
+from models.supervised import SupervisedBaseModel
 
 
 class LogisticModel(SupervisedBaseModel):

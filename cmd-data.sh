@@ -1,8 +1,10 @@
 #!/usr/bin/env bash
 
 
-DATA_DIR=../data/offense_eval
+# CHANGE THIS DIRECTORIES
+DATA_DIR=../data/offens_eval
 EMBEDDINGS_DIR=../embeddings/fasttext
+
 TRAINING_DIR=${DATA_DIR}/training
 TEST_DIR=${DATA_DIR}/test
 
@@ -39,12 +41,25 @@ python -m preprocessing.text_tokenizer \
     --language=english \
     --text-field=tweet
 
+#EMBEDDINGS
+
+# embeddings, first with raw data
+python -m preprocessing.embeddings \
+    --data-files \
+    ${TRAINING_DIR}/offenseval-training-v1.tsv \
+    ${TEST_DIR}/testset-taska.tsv \
+    ${TEST_DIR}/testset-taskb.tsv \
+    ${TEST_DIR}/testset-taskc.tsv \
+    --embeddings-file=${EMBEDDINGS_DIR}/crawl-300d-2M.vec \
+    --output-dir=${TRAINING_DIR} \
+    --text-field=tweet
+
+# embeddings, first with preprocessed data
 python -m embeddings \
     --data-files \
     ${TRAINING_DIR}/offenseval-training-v1.tsv \
     ${TEST_DIR}/testset-taska.tsv \
     ${TEST_DIR}/testset-taskb.tsv \
-    --embeddings-path=${EMBEDDINGS_DIR}/crawl-300d-2M.vec \
-    --output-dir=${TRAINING_DIR}/crawl-300d-2M.vec \
+    --embeddings-file=${EMBEDDINGS_DIR}/crawl-300d-2M.vec \
+    --output-dir=${TRAINING_DIR} \
     --text-field=tweet \
-    --labels=subtask_a

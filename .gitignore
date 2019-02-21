@@ -1,6 +1,4 @@
 .DS_Store
-data/
-results/
 venv/
 paper/
 embeddings/
