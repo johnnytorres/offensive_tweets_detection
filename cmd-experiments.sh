@@ -1,11 +1,10 @@
 #!/usr/bin/env bash
 
-# EVALUATION
-
-DATA_DIR=../data/offens_eval
+BASE_DIR=$([ "$1" = "" ] && echo "." || echo "$1" )
+DATA_DIR=${BASE_DIR}/data/offens_eval
 TRAINING_DIR=${DATA_DIR}/training
 TEST_DIR=${DATA_DIR}/test
-OUTPUT_DIR=../results
+OUTPUT_DIR=${BASE_DIR}/results
 
 # TASK A
 
