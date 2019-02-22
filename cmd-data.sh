@@ -12,7 +12,7 @@ TEST_DIR=${DATA_DIR}/test
 mkdir -p ${DATA_DIR}
 mkdir -p ${EMBEDDINGS_DIR}
 
-wget -O ${DATA_DIR}/offens_eval.zip https://storage.googleapis.com/ml-research-datasets/toxicity/twitter/offens_eval.zip
+wget -O ${DATA_DIR}/offens_eval.zip https://storage.googleapis.com/ml-research-datasets/toxicity/offens_eval/offens_eval.zip
 unzip -d ${DATA_DIR} ${DATA_DIR}/offens_eval.zip
 
 wget -O ${EMBEDDINGS_DIR}/crawl-300d-2M.vec.zip https://s3-us-west-1.amazonaws.com/fasttext-vectors/crawl-300d-2M.vec.zip

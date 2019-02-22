@@ -17,7 +17,7 @@ python -m task \
     --labels=subtask_a \
     --text-field=tweet \
     --kfolds=10 \
-    --model=lr
+    --model=lr,fasttext,cnn,lstm,bilstm,cnn_lstm
 
 ## preprocessing
 #python -m task \
