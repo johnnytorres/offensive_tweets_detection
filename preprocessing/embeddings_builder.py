@@ -5,6 +5,7 @@ import numpy as np
 import pandas as pd
 from keras_preprocessing.text import Tokenizer
 from tqdm import tqdm
+from gensim.models import Word2Vec
 
 
 class EmbeddingsBuilder:
@@ -26,10 +27,12 @@ class EmbeddingsBuilder:
 
         with open(self.small_embeddings_path, 'w') as out_file:
             with open(self.embeddings_path, 'r') as f:
-                header = next(f)
-                num_embeddings, embeddings_dim = header.split(' ')
-                num_embeddings = int(num_embeddings)
-                out_file.write(header)
+                num_embeddings=5000000
+                if not self.args.no_embeddings_header:
+                    header = next(f)
+                    num_embeddings, embeddings_dim = header.split(' ')
+                    num_embeddings = int(num_embeddings)
+                    out_file.write(header)
                 for _, line in tqdm(enumerate(f), 'loading embeddings', total=num_embeddings):
                     tokens = line.rstrip().split(" ")
                     word = tokens[0]
@@ -38,6 +41,20 @@ class EmbeddingsBuilder:
                         out_file.write(line)
 
         logging.info("Found embeddings for {} out of {} words in vocabulary".format(num_found, num_words))
+
+    def build_fit_w2v(self, X_text):
+
+        X_text = [ sentence.split() for sentence in X_text ]
+
+        w2v_model = Word2Vec(size=300)
+        w2v_model.build_vocab(X_text)
+        w2v_model.train(
+            X_text,
+            total_examples=w2v_model.corpus_count,
+            epochs=w2v_model.iter
+        )
+        w2v_model.wv.save_word2vec_format(self.small_embeddings_path)
+        #return w2v_model
 
     def run(self):
 
@@ -53,7 +70,12 @@ class EmbeddingsBuilder:
         tokenizer = Tokenizer()
         tokenizer.fit_on_texts(X)
 
-        self.build_embedding(tokenizer.word_index)
+        if self.args.w2v:
+            X = tokenizer.texts_to_sequences(X)
+            X = tokenizer.sequences_to_texts(X)
+            self.build_fit_w2v(X)
+        else:
+            self.build_embedding(tokenizer.word_index)
 
 
 if __name__ == '__main__':
@@ -65,6 +87,8 @@ if __name__ == '__main__':
     parser.add_argument('--output-dir', type=lambda x: os.path.expanduser(x))
     parser.add_argument('--num-unlabeled', type=int, default=0)
     parser.add_argument('--text-field', type=str)
+    parser.add_argument('--w2v', action='store_true')
+    parser.add_argument('--no-embeddings-header', action='store_true')
     builder = EmbeddingsBuilder(args=parser.parse_args())
     builder.run()
     logging.info('task finished...[ok]')

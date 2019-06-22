@@ -28,7 +28,7 @@ class BiLstmModel(FastTextModel):
                 self.embeddings_dim,
                 input_length=self.max_len,
                 # mask_zero=True,
-                weights=weights
+                weights=weights,
             )
         )
         model.add(Bidirectional(LSTM(64)))
