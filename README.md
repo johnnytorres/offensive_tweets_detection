@@ -4,7 +4,7 @@
 This is the implementation of the model for the task of identifying offensive tweets in the Task 6 of SemEval-2019
 (International Workshop on Semantic Evaluation), as detailed in the paper:
 
-JTML at SemEval-2019 Task 6: Offensive Tweets Identification using Convolutional Neural Networks
+[JTML at SemEval-2019 Task 6: Offensive Tweets Identification using Convolutional Neural Networks] (https://aclweb.org/anthology/papers/S/S19/S19-2117/)
 
 Please cite the paper if you use the code. Thanks!
 
