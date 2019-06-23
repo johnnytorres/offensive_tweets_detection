@@ -1,22 +1,36 @@
 #!/usr/bin/env bash
 
+set -e
+
 BASE_DIR=$([ "$1" = "" ] && echo "." || echo "$1" )
 
-# CHANGE THIS DIRECTORIES
-DATA_DIR=${BASE_DIR}/data/offens_eval
-EMBEDDINGS_DIR=~data/embeddings/fasttext
+DATA_DIR=${BASE_DIR}/data
+EMBEDDINGS_DIR=${BASE_DIR}/embeddings/fasttext
+TRAINING_DIR=${DATA_DIR}/offens_eval/training
+TEST_DIR=${DATA_DIR}/offens_eval/test
 
-TRAINING_DIR=${DATA_DIR}/training
-TEST_DIR=${DATA_DIR}/test
 
 mkdir -p ${DATA_DIR}
 mkdir -p ${EMBEDDINGS_DIR}
 
-wget -O ${DATA_DIR}/offens_eval.zip https://storage.googleapis.com/ml-research-datasets/toxicity/offens_eval/offens_eval.zip
-unzip -d ${DATA_DIR} ${DATA_DIR}/offens_eval.zip
+# copy from the original reposistory
+DATA_FILE=${DATA_DIR}/offens_eval.zip
+if [ ! -f ${DATA_FILE} ]; then
+    echo "fasttext embeddings not found!"
+    wget -O ${DATA_FILE} https://storage.googleapis.com/ml-research-datasets/toxicity/offens_eval.zip
+    unzip -d ${DATA_DIR} ${DATA_FILE}
+fi
 
-wget -O ${EMBEDDINGS_DIR}/crawl-300d-2M.vec.zip https://s3-us-west-1.amazonaws.com/fasttext-vectors/crawl-300d-2M.vec.zip
-unzip -d ${EMBEDDINGS_DIR} ${EMBEDDINGS_DIR}/crawl-300d-2M.vec.zip
+# ---------- get embeddings
+
+# for fasttext download and filter to words in the dataset
+EMBEDDINGS_FILE=${EMBEDDINGS_DIR}/crawl-300d-2M.vec.zip
+if [ ! -f ${EMBEDDINGS_FILE} ]; then
+    echo "fasttext embeddings not found!"
+    wget -O ${EMBEDDINGS_FILE} https://dl.fbaipublicfiles.com/fasttext/vectors-english/crawl-300d-2M.vec.zip
+    unzip -d ${EMBEDDINGS_DIR} ${EMBEDDINGS_FILE}
+fi
+
 
 EMBEDDINGS_DIR=${BASE_DIR}/embeddings/fasttext
 python -m preprocessing.embeddings_builder \
@@ -29,17 +43,7 @@ python -m preprocessing.embeddings_builder \
     --output-dir=${TRAINING_DIR} \
     --text-field=tweet
 
-EMBEDDINGS_DIR=~/data/embeddings/glove
-python -m preprocessing.embeddings_builder \
-    --data-files \
-    ${TRAINING_DIR}/offenseval-training-v1.tsv \
-    ${TEST_DIR}/testset-taska.tsv \
-    ${TEST_DIR}/testset-taskb.tsv \
-    --embeddings-file=${EMBEDDINGS_DIR}/glove.twitter.27B.200d.txt \
-    --output-dir=${TRAINING_DIR} \
-    --text-field=tweet \
-    --no-embeddings-header
-
+# for word2vec train with words in the dataset
 EMBEDDINGS_DIR=${BASE_DIR}/embeddings/w2v
 python -m preprocessing.embeddings_builder \
     --data-files \
@@ -51,6 +55,17 @@ python -m preprocessing.embeddings_builder \
     --text-field=tweet \
     --w2v
 
+# future work with Glove
+#EMBEDDINGS_DIR=~/data/embeddings/glove
+#python -m preprocessing.embeddings_builder \
+#    --data-files \
+#    ${TRAINING_DIR}/offenseval-training-v1.tsv \
+#    ${TEST_DIR}/testset-taska.tsv \
+#    ${TEST_DIR}/testset-taskb.tsv \
+#    --embeddings-file=${EMBEDDINGS_DIR}/glove.twitter.27B.200d.txt \
+#    --output-dir=${TRAINING_DIR} \
+#    --text-field=tweet \
+#    --no-embeddings-header
 
 
 # PREPROCESSING TWEETS

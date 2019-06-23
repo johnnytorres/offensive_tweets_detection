@@ -19,4 +19,4 @@ def get_model(task):
         return BiLstmModel(task)
     if task.args.model == 'cnnlstm':
         return CnnLstmModel(task)
-    raise NotImplemented('model not implemented')
+    raise NotImplementedError('model not implemented')

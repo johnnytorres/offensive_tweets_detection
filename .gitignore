@@ -5,6 +5,8 @@ embeddings/
 input/
 .idea/
 results/
+data/
+submission/
 
 ~*.xls
 ~*.xlsx
