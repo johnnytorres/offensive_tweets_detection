@@ -25,7 +25,7 @@ First, run the script to download the dataset and prepare the embeddings
 
 Then, run the scripts to train the models with k-Fold (k=10)
 ```bash
-./script-run-experiments.sh
+./script-run.sh
 ```
 
 
