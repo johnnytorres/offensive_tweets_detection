@@ -5,7 +5,7 @@ from keras.layers import Embedding
 from keras.layers import Conv1D, GlobalMaxPooling1D
 from keras.datasets import imdb
 
-from models.supervised_fasttext import FastTextModel
+from toxicitydetector.models.supervised_fasttext import FastTextModel
 
 
 class CnnModel(FastTextModel):

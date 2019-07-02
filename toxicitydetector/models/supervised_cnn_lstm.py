@@ -1,12 +1,4 @@
-from keras.preprocessing import sequence
-from keras.models import Sequential
-from keras.layers import Dense, Dropout, Activation
-from keras.layers import Embedding
-from keras.layers import LSTM
-from keras.layers import Conv1D, MaxPooling1D
-from keras.datasets import imdb
-
-from models.supervised_fasttext import FastTextModel
+from toxicitydetector.models.supervised_fasttext import FastTextModel
 
 
 class CnnLstmModel(FastTextModel):

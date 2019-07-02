@@ -5,7 +5,7 @@ from keras.models import Sequential
 from keras.layers import Dense, Dropout, Embedding, LSTM, Bidirectional
 from keras.datasets import imdb
 
-from models.supervised_fasttext import FastTextModel
+from toxicitydetector.models.supervised_fasttext import FastTextModel
 
 
 class BiLstmModel(FastTextModel):

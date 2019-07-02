@@ -1,11 +1,10 @@
 import numpy as np
 from sklearn.feature_extraction.text import TfidfVectorizer
-from sklearn.feature_selection import SelectKBest, chi2
 from sklearn.linear_model import LogisticRegression
 from sklearn.multiclass import OneVsRestClassifier
 from sklearn.pipeline import Pipeline
 
-from models.supervised import SupervisedBaseModel
+from toxicitydetector.models.supervised import SupervisedBaseModel
 
 
 class LogisticModel(SupervisedBaseModel):

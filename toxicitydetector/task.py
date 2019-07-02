@@ -10,8 +10,8 @@ from argparse import ArgumentParser
 from sklearn.metrics import precision_recall_fscore_support
 from sklearn.model_selection import KFold
 from sklearn.model_selection import train_test_split
-from preprocessing.csv_reader import DataLoader
-from models.factory import get_model
+from toxicitydetector.preprocessing.csv_reader import DataLoader
+from toxicitydetector.models.factory import get_model
 
 
 class ClassificationTask:

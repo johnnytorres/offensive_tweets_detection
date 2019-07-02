@@ -2,41 +2,42 @@
 
 set -e
 
-BASE_DIR=$([ "$1" = "" ] && echo "." || echo "$1" )
-DATA_DIR=${BASE_DIR}/data/offens_eval
-TRAINING_DIR=${DATA_DIR}/training
+BASE_DIR=$([ "$1" = "" ] && echo "$HOME/data" || echo "$1" )
+
+DATA_DIR=${BASE_DIR}/toxicity/semeval2019
+TRAIN_DIR=${DATA_DIR}/training
 TEST_DIR=${DATA_DIR}/test
-OUTPUT_DIR=${BASE_DIR}/results
+OUTPUT_DIR=${DATA_DIR}/results
 
-
+mkdir -p $OUTPUT_DIR
 
 # classification models evaluation for TASK A
-python -m task \
-    --train-path=${TRAINING_DIR}/offenseval-training-v1.tsv \
+python -m toxicitydetector.task \
+    --train-path=${TRAIN_DIR}/offenseval-training-v1.tsv \
     --test-path=${TEST_DIR}/testset-taska.tsv \
-    --embeddings-path=${TRAINING_DIR}/crawl-300d-2M.vec \
+    --embeddings-path=${TRAIN_DIR}/crawl-300d-2M.vec \
     --output-file=${OUTPUT_DIR}/predictions_taska.csv \
     --labels=subtask_a \
     --text-field=tweet \
     --kfolds=10 \
     --model=lr,fasttext,cnn,lstm,bilstm
 
-# todo: evaluate additional tasks: TASK B,C
+# TODO: evaluate additional tasks: TASK B,C
 
-#python -m task \
-#    --train-path=${TRAINING_DIR}/offenseval-training-v1.tsv \
+#python -m toxicitydetector.task \
+#    --train-path=${TRAIN_DIR}/offenseval-training-v1.tsv \
 #    --test-path=${TEST_DIR}/testset-taskb.tsv \
-#    --embeddings-path=${TRAINING_DIR}/crawl-300d-2M.vec \
+#    --embeddings-path=${TRAIN_DIR}/crawl-300d-2M.vec \
 #    --output-file=../results/task_b_validation.csv \
 #    --labels=subtask_b \
 #    --text-field=tweet \
 #    --model=cnn \
 #    --kfolds=10
 
-#python -m task \
-#    --train-path=${TRAINING_DIR}/offenseval-training-v1.tsv \
+#python -m toxicitydetector.task \
+#    --train-path=${TRAIN_DIR}/offenseval-training-v1.tsv \
 #    --test-path=${TEST_DIR}/testset-taskc.tsv \
-#    --embeddings-path=${TRAINING_DIR}/crawl-300d-2M.vec \
+#    --embeddings-path=${TRAIN_DIR}/crawl-300d-2M.vec \
 #    --output-file=../results/task_c_validation.csv \
 #    --labels=subtask_c \
 #    --text-field=tweet \
@@ -47,8 +48,8 @@ python -m task \
 
 # embeddings evaluation
 
-python -m task \
-    --train-path=${TRAINING_DIR}/offenseval-training-v1.tsv \
+python -m toxicitydetector.task \
+    --train-path=${TRAIN_DIR}/offenseval-training-v1.tsv \
     --test-path=${TEST_DIR}/testset-taska.tsv \
     --output-file=${OUTPUT_DIR}/predictions_embeddings_random.csv \
     --labels=subtask_a \
@@ -56,31 +57,31 @@ python -m task \
     --kfolds=10 \
     --model=cnn
 
-python -m task \
-    --train-path=${TRAINING_DIR}/offenseval-training-v1.tsv \
+python -m toxicitydetector.task \
+    --train-path=${TRAIN_DIR}/offenseval-training-v1.tsv \
     --test-path=${TEST_DIR}/testset-taska.tsv \
-    --embeddings-path=${TRAINING_DIR}/w2v.vec \
+    --embeddings-path=${TRAIN_DIR}/w2v.vec \
     --output-file=${OUTPUT_DIR}/predictions_embeddings_word2vec.csv \
     --labels=subtask_a \
     --text-field=tweet \
     --kfolds=10 \
     --model=cnn
 
-python -m task \
-    --train-path=${TRAINING_DIR}/offenseval-training-v1.tsv \
+python -m toxicitydetector.task \
+    --train-path=${TRAIN_DIR}/offenseval-training-v1.tsv \
     --test-path=${TEST_DIR}/testset-taska.tsv \
-    --embeddings-path=${TRAINING_DIR}/crawl-300d-2M.vec \
+    --embeddings-path=${TRAIN_DIR}/crawl-300d-2M.vec \
     --output-file=${OUTPUT_DIR}/predictions_embeddings_fasttext.csv \
     --labels=subtask_a \
     --text-field=tweet \
     --kfolds=10 \
     --model=cnn
 
-# todo: evalute Glove embeddings
-#python -m task \
-#    --train-path=${TRAINING_DIR}/offenseval-training-v1.tsv \
+# TODO: evalute Glove embeddings
+#python -m toxicitydetector.task \
+#    --train-path=${TRAIN_DIR}/offenseval-training-v1.tsv \
 #    --test-path=${TEST_DIR}/testset-taska.tsv \
-#    --embeddings-path=${TRAINING_DIR}/glove.twitter.27B.200d.txt \
+#    --embeddings-path=${TRAIN_DIR}/glove.twitter.27B.200d.txt \
 #    --embeddings-size=200 \
 #    --no-embeddings-header \
 #    --output-file=${OUTPUT_DIR}/predictions_embeddings.csv \
@@ -91,11 +92,11 @@ python -m task \
 #-----------------------------------------------------------
 
 
-# todo: evaluate with preprocessing of the tweets
-#python -m task \
-#    --train-path=${TRAINING_DIR}/offenseval_preprocessed.tsv \
+# TODO: evaluate with preprocessing of the tweets
+#python -m toxicitydetector.task \
+#    --train-path=${TRAIN_DIR}/offenseval_preprocessed.tsv \
 #    --test-path=${TEST_DIR}/testset_taska_preprocessed.tsv \
-#    --embeddings-path=${TRAINING_DIR}/crawl-300d-2M.vec \
+#    --embeddings-path=${TRAIN_DIR}/crawl-300d-2M.vec \
 #    --labels=subtask_a \
 #    --text-field=tweet \
 #    --kfolds=10 \
@@ -103,10 +104,10 @@ python -m task \
 #
 ## prediction with best preprocessing / model
 #
-#python -m task \
-#    --train-path=${TRAINING_DIR}/offenseval-training-v1.tsv \
+#python -m toxicitydetector.task \
+#    --train-path=${TRAIN_DIR}/offenseval-training-v1.tsv \
 #    --test-path=${TEST_DIR}/testset-taska.tsv \
-#    --embeddings-path=${TRAINING_DIR}/crawl-300d-2M.vec \
+#    --embeddings-path=${TRAIN_DIR}/crawl-300d-2M.vec \
 #    --output-file=../results/predictions_cnn.csv \
 #    --labels=subtask_a \
 #    --text-field=tweet \

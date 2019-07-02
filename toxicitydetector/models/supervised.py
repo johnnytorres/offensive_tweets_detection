@@ -2,7 +2,7 @@ import numpy as np
 from sklearn.semi_supervised import LabelSpreading
 from tqdm import tqdm
 
-from models.base import BaseModel
+from toxicitydetector.models.base import BaseModel
 
 
 class SupervisedBaseModel(BaseModel):

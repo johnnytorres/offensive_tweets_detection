@@ -19,7 +19,7 @@ from keras.layers import Dense, Embedding
 from keras.layers import LSTM
 from keras.datasets import imdb
 
-from models.supervised_fasttext import FastTextModel
+from toxicitydetector.models.supervised_fasttext import FastTextModel
 
 
 class LstmModel(FastTextModel):

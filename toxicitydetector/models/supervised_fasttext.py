@@ -22,7 +22,7 @@ from keras.datasets import imdb
 from keras.preprocessing.text import Tokenizer
 from tqdm import tqdm
 
-from models.supervised import SupervisedBaseModel
+from toxicitydetector.models.supervised import SupervisedBaseModel
 
 
 def create_ngram_set(input_list, ngram_value=2):
