@@ -65,12 +65,12 @@ class LogisticModel(SupervisedBaseModel):
 
     def train(self, X, y):
         X, y = self.augment_instances(X, y)
-        X_text = self.text_repr_model.fit_transform(X[:, self.args.TEXT_COL])
+        X_text = self.text_repr_model.fit_transform(X[:, self.args.text_col])
         X_all_feats = self.augment_features(X_text, X)
         self.clf_model.fit(X_all_feats, y)
 
     def predict(self, X):
-        X_text = self.text_repr_model.transform(X[:, self.args.TEXT_COL])
+        X_text = self.text_repr_model.transform(X[:, self.args.text_col])
         X_all_feats = self.augment_features(X_text, X)
         y_pred = self.clf_model.predict(X_all_feats)
         return y_pred

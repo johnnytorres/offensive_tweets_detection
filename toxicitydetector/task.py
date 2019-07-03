@@ -19,7 +19,6 @@ class ClassificationTask:
         self.args = args
         self.args.run_id = str(uuid.uuid4())
         self.args.initial_timestamp = datetime.now().timestamp()
-        self.args.TEXT_COL = 1
         self.dataset = DataLoader(self.args)
         self.output_path = args.output_file
         self.write_header = not self.args.no_output_headers

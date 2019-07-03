@@ -4,23 +4,15 @@ from toxicitydetector.models.supervised_fasttext import FastTextModel
 class CnnLstmModel(FastTextModel):
     def __init__(self, task):
         super(CnnLstmModel, self).__init__(task)
-        # set parameters:
-        #self.max_features = 4000
-        #self.max_len = 400
-        #self.batch_size = 32
-
         # Convolution
         self.filters = 64 # 250
         self.kernel_size = 5 # 3
         #self.hidden_dims = 250
         self.pool_size = 4
-
         # LSTM
-        self.lstm_output_size = 70
-
+        self.lstm_output_size = 100
         # training
-        self.epochs = 25
-        self.batch_size = 30
+        #self.batch_size = 30
 
 
     def build_model(self):

@@ -11,14 +11,9 @@ from toxicitydetector.models.supervised_fasttext import FastTextModel
 class CnnModel(FastTextModel):
     def __init__(self, task):
         super(CnnModel, self).__init__(task)
-        # set parameters:
-        #self.max_features = 4000
-        #self.max_len = 400
-        #self.batch_size = 32
         self.filters = 250
         self.kernel_size = 3
         self.hidden_dims = 250
-        self.epochs = 5
 
     def build_model(self):
         print('Build model...')

@@ -19,6 +19,7 @@ python -m toxicitydetector.task \
     --output-file=${OUTPUT_DIR}/predictions_taska.csv \
     --labels=subtask_a \
     --text-field=tweet \
+    --field-sep="\t" \
     --kfolds=10 \
     --model=lr,fasttext,cnn,lstm,bilstm
 
@@ -54,6 +55,7 @@ python -m toxicitydetector.task \
     --output-file=${OUTPUT_DIR}/predictions_embeddings_random.csv \
     --labels=subtask_a \
     --text-field=tweet \
+    --field-sep="\t" \
     --kfolds=10 \
     --model=cnn
 
@@ -64,6 +66,7 @@ python -m toxicitydetector.task \
     --output-file=${OUTPUT_DIR}/predictions_embeddings_word2vec.csv \
     --labels=subtask_a \
     --text-field=tweet \
+    --field-sep="\t" \
     --kfolds=10 \
     --model=cnn
 
@@ -74,6 +77,7 @@ python -m toxicitydetector.task \
     --output-file=${OUTPUT_DIR}/predictions_embeddings_fasttext.csv \
     --labels=subtask_a \
     --text-field=tweet \
+    --field-sep="\t" \
     --kfolds=10 \
     --model=cnn
 

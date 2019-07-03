@@ -28,7 +28,7 @@ class SupervisedBaseModel(BaseModel):
         y_unlabeled = y_unlabeled.values
 
 
-        X_train_text = X_train[:, self.args.TEXT_COL]
+        X_train_text = X_train[:, self.args.text_col]
         self.fit_text(X_train_text, y_train)
         X_train_rep = self.transform_text(X_train_text)
         X_train_rep = self.augment_features(X_train_rep, X_train)
@@ -42,7 +42,7 @@ class SupervisedBaseModel(BaseModel):
             end_row = np.minimum(end_row, num_instances)
             for col in tqdm(range(num_cols), desc='spreading labels in cols', leave=False):
 
-                X_unlabeled_rep = self.transform_text(X_unlabeled[row:end_row, self.args.TEXT_COL])
+                X_unlabeled_rep = self.transform_text(X_unlabeled[row:end_row, self.args.text_col])
                 X_unlabeled_rep = self.augment_features(X_unlabeled_rep, X_unlabeled[row:end_row, :])
 
                 X_spread = np.append(X_train_rep, X_unlabeled_rep, axis=0)

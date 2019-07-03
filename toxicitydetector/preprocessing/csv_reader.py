@@ -27,6 +27,7 @@ class DataLoader:
 
         self.age_scaler = None
         self.feature_labelers = {}
+        self.args.text_col = 1
 
     def load(self):
 

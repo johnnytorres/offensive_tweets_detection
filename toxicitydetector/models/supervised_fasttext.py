@@ -125,7 +125,7 @@ class FastTextModel(SupervisedBaseModel):
     def __init__(self, task):
         super(FastTextModel, self).__init__(task)
         self.args = task.args
-        self.epochs = 15
+        self.epochs = 5
         self.max_len = 50
         self.batch_size = 32
         self.max_features = 5000
@@ -133,8 +133,8 @@ class FastTextModel(SupervisedBaseModel):
         self.embeddings_matrix = None
         self.ngram_range = 1
         self.tokenizer = Tokenizer(num_words=self.max_features)
-        self.model = None
-        self.token_indice = None
+        self.model = None # keras model
+        self.token_indice = None # for n-grams
         self.num_labels = len(self.args.labels)
 
 
@@ -151,7 +151,7 @@ class FastTextModel(SupervisedBaseModel):
                 input_length=self.max_len,
                 #trainable=False,
                 weights = weights,
-                mask_zero=True
+                #mask_zero=True  # not useful in CNN like models
 
             ),
         )
@@ -202,7 +202,7 @@ class FastTextModel(SupervisedBaseModel):
     def fit_text(self, X_text, y=None):
 
         X_unlabeled = self.dataset.X_train_unlabeled.values
-        X_unlabeled_text = X_unlabeled[:, self.args.TEXT_COL]
+        X_unlabeled_text = X_unlabeled[:, self.args.text_col]
         X = np.append(X_text, X_unlabeled_text, axis=0)
 
         #X = self.preprocess_text(X)
@@ -227,12 +227,11 @@ class FastTextModel(SupervisedBaseModel):
         if self.dataset.X_test is not None:
             X = np.append(X, self.dataset.X_test[self.args.text_field].values, axis=0)
 
-
         self.tokenizer.fit_on_texts(X)
 
         num_words = len(self.tokenizer.word_index)
         #self.max_features = np.minimum(self.max_features, num_words) + 1 # add padding
-        self.max_features = num_words + 1 #add paddings
+        #self.max_features = num_words + 1 #add paddings
 
         self.embeddings_matrix = get_embedding_vectors(
             self.args.embeddings_path,
@@ -253,7 +252,7 @@ class FastTextModel(SupervisedBaseModel):
         print('TRAINING')
         X, y = self.augment_instances(X, y)
         # convert to sequences
-        X_text = X[:,self.args.TEXT_COL]
+        X_text = X[:,self.args.text_col]
 
         X_text = self.preprocess_text(X_text)
 
@@ -271,7 +270,7 @@ class FastTextModel(SupervisedBaseModel):
 
     def predict(self, X):
         print('PREDICT')
-        X_text = X[:, self.args.TEXT_COL]
+        X_text = X[:, self.args.text_col]
         X_text = self.tokenizer.texts_to_sequences(X_text)
         self.show_text_info(X_text)
 

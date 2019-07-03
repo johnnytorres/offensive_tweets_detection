@@ -25,12 +25,6 @@ from toxicitydetector.models.supervised_fasttext import FastTextModel
 class LstmModel(FastTextModel):
     def __init__(self, task):
         super(LstmModel, self).__init__(task)
-        # set parameters:
-        #self.max_features = 20000
-        # cut texts after this number of words (among top max_features most common words)
-        #self.maxlen = 80
-        #self.batch_size = 32
-        self.epochs = 10
 
     def build_model(self):
         print('Build model...')

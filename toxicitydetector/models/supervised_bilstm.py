@@ -11,12 +11,6 @@ from toxicitydetector.models.supervised_fasttext import FastTextModel
 class BiLstmModel(FastTextModel):
     def __init__(self, task):
         super(BiLstmModel, self).__init__(task)
-        # set parameters:
-        #self.max_features = 20000
-        # cut texts after this number of words (among top max_features most common words)
-        #self.maxlen = 80
-        #self.batch_size = 32
-        self.epochs = 5
 
     def build_model(self):
         print('Build model...')
@@ -27,7 +21,7 @@ class BiLstmModel(FastTextModel):
                 self.max_features,
                 self.embeddings_dim,
                 input_length=self.max_len,
-                # mask_zero=True,
+                #mask_zero=True,
                 weights=weights,
             )
         )
