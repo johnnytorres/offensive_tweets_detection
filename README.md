@@ -20,12 +20,12 @@ pip install -r requirements.txt
 
 First, run the script to download the dataset and prepare the embeddings
 ```bash
-./script-getdata.sh
+./script-data.sh
 ```
 
 Then, run the scripts to train the models with k-Fold (k=10)
 ```bash
-./script-run.sh
+./script-experiments.sh
 ```
 
 
