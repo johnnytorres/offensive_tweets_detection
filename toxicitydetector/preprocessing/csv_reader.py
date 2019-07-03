@@ -1,19 +1,15 @@
 
 import os
-import pandas as pd
-import numpy as np
 from argparse import ArgumentParser
-from tqdm import tqdm
-from sklearn.preprocessing import LabelEncoder
-from sklearn.preprocessing import StandardScaler
 
-TEXT_COL = 1
-TEXT_COL_NAME = 'text'
+import numpy as np
+import pandas as pd
+from sklearn.preprocessing import LabelEncoder
+
 
 class DataLoader:
     def __init__(self, args):
         self.args = args
-
 
         self.train_labeled_path = args.train_path
         self.train_unlabeled_path = args.unlabeled_path
@@ -29,12 +25,12 @@ class DataLoader:
         self.y_cols = []
         self.x_cols = None
 
-        self.age_scaler= None
+        self.age_scaler = None
         self.feature_labelers = {}
 
     def load(self):
 
-        ds = pd.read_csv(self.train_labeled_path, sep='\t',keep_default_na=False)
+        ds = pd.read_csv(self.train_labeled_path, sep=self.args.field_sep, keep_default_na=False)
         ds_unlabeled = None
         ds_test = None
 
@@ -44,13 +40,14 @@ class DataLoader:
 
         if self.args.predict:
             with open(self.test_path) as datafile:
-                ds_test = pd.read_csv(datafile, sep='\t',keep_default_na=False)
+                ds_test = pd.read_csv(datafile, sep=self.args.field_sep, keep_default_na=False)
 
         # fill nan in text
-        ds['tweet'] = ds['tweet'].fillna('')
+        tweet_field = self.args.text_field
+        ds[tweet_field] = ds[tweet_field].fillna('')
 
         if ds_test is not None:
-            ds_test['tweet'] = ds_test['tweet'].fillna('')
+            ds_test[tweet_field] = ds_test[tweet_field].fillna('')
 
         # fill y cols
         self.y_cols = self.args.labels
@@ -58,9 +55,9 @@ class DataLoader:
         # augment features
 
         if self.args.use_allfeats:
-            self.x_cols = ['id', 'tweet']
+            self.x_cols = ['id', tweet_field]
         else:
-            self.x_cols = ['id', 'tweet']
+            self.x_cols = ['id', tweet_field]
 
         # standarize
         #self.standarize_feats(ds,ds_unlabeled, ds_test)
