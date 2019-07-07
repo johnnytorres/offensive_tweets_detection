@@ -96,6 +96,9 @@ class ClassificationTask:
 
         if self.args.predict:
 
+            if len(self.dataset.y_cols) == 1:
+                y_pred = np.expand_dims(y_pred, axis=1)
+
             for ix, col in enumerate(self.dataset.y_cols):
                 self.dataset.X_test.loc[:,col] = y_pred[:, ix]
 

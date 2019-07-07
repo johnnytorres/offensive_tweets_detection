@@ -22,6 +22,7 @@ class LogisticModel(SupervisedBaseModel):
 
     def augment_features(self, X_text, X_all_feats):
 
+        #TODO: this is not scalable to big datasets
         if not self.args.use_allfeats:
             return X_text.toarray()
 
