@@ -4,6 +4,7 @@ paper/
 embeddings/
 input/
 .idea/
+.vscode/
 results/
 data/
 submission/

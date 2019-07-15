@@ -68,7 +68,8 @@ class ClassificationTask:
             model.train(X_kfold, y_kfold)
             y_pred = model.predict(X_valid)
 
-            score = precision_recall_fscore_support(y_valid, y_pred, average='weighted')
+            preds = (y_pred > 0.5).astype(int) if self.args.predict_probs else y_pred
+            score = precision_recall_fscore_support(y_valid, preds, average='weighted')
             score = score[2] #F1
             scores.append(score)
             print(f"CV {k} F1: {score}")
@@ -109,7 +110,8 @@ class ClassificationTask:
             results.to_csv(self.output_path, index=False, header=self.write_header)
 
         else:
-            score = precision_recall_fscore_support(y_test, y_pred, average='weighted')
+            preds = (y_pred > 0.5).astype(int) if self.args.predict_probs else y_pred
+            score = precision_recall_fscore_support(y_test, preds, average='weighted')
             score = score[2] # f1
             scores = np.array(scores)
             print(f"CV F1: %0.2f (+/- %0.2f)" % (scores.mean(), scores.std() * 2))
@@ -150,7 +152,7 @@ if __name__ == '__main__':
     parser.add_argument('--test-path', type=lambda x: os.path.expanduser(x))
     parser.add_argument('--labels', type=lambda x: x.split(','))
     parser.add_argument('--field-sep', type=str, default=',')
-    parser.add_argument('--text-field', type=str)
+    parser.add_argument('--text-field', type=str, default='text')
     parser.add_argument('--use-allfeats', action='store_true')
     parser.add_argument('--num-unlabeled', type=int, default=0)
     parser.add_argument('--kfolds', type=int, default=2)
@@ -160,6 +162,7 @@ if __name__ == '__main__':
     parser.add_argument('--no-embeddings-header', action='store_true')
     parser.add_argument('--random-state', type=int, default=1)
     parser.add_argument('--predict', action='store_true')
+    parser.add_argument('--predict-probs', action='store_true')
     parser.add_argument('--no-output-headers', action='store_true')
     parser.add_argument('--output-file', type=lambda x:os.path.expanduser(x), default='../results/predictions.csv')
     parser.add_argument('--models')

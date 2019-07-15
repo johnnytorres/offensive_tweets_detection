@@ -108,6 +108,8 @@ class DataLoader:
             X[f] = labeler.transform(X[f].values)
 
     def decode_features(self, data, features):
+        if self.args.predict_probs:
+            return data
         for f in features:
             data.loc[:,f] = self.feature_labelers[f].inverse_transform(data[f])
         return data

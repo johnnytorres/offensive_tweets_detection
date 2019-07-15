@@ -73,5 +73,13 @@ class LogisticModel(SupervisedBaseModel):
     def predict(self, X):
         X_text = self.text_repr_model.transform(X[:, self.args.text_col])
         X_all_feats = self.augment_features(X_text, X)
-        y_pred = self.clf_model.predict(X_all_feats)
+        
+        if self.args.predict_probs:
+            y_pred = self.clf_model.predict_proba(X_all_feats)  
+
+            if len(self.args.labels) == 1:
+                y_pred = y_pred[:,1]
+
+        else:
+            y_pred = self.clf_model.predict(X_all_feats)
         return y_pred
