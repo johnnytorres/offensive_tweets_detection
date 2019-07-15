@@ -30,59 +30,78 @@ class DataTokenizer:
 		self.input_file = os.path.expanduser(args.input_file)
 		self.output_file = os.path.expanduser(args.output_file)
 		self.text_field = args.text_field
-		self.lowercase = True
-		self.tokenizer = args.tokenizer  # 0: not tokenize, 1: word_tokenize, 2: punk tokenize, 3: twitter tokenizer
-		self.stem = False
-		self.lemmatize = False
-		self.stemmer = SnowballStemmer("english") if self.stem else None
-		self.lemmatizer = WordNetLemmatizer() if self.lemmatize else None
-		self.tweetokenizer = TweetTokenizer(strip_handles=True, reduce_len=True)
 
-		stopword_list = nltk.corpus.stopwords.words(args.language)
-		if 'no' in stopword_list:
-			stopword_list.remove('no')
-		if 'not' in stopword_list:
-			stopword_list.remove('not')
-		self.stopword_list = stopword_list
+		# 0: not tokenize, 1: word_tokenize, 2: punk tokenize, 3: twitter tokenizer, 4: improved twitter tokenizer
+		self.tokenizer = args.tokenizer  
+		self.tweetokenizer = TweetTokenizer(strip_handles=True, reduce_len=True)
 
 		if self.tokenizer==3:
 			self.tweet_tokenizer = TweetTokenizer()
-		
-	def tokenize_short_text(self, raw_short_text):
 
-		short_text = raw_short_text
-		short_text = short_text.strip()
-		short_text = unidecode.unidecode(short_text)
+		if self.tokenizer==5:
+			self.tweet_tokenizer = TweetTokenizer(strip_handles=False, reduce_len=True)
+
+		self.lowercase = False
+		self.stem = False
+		if self.stem:
+			self.stemmer = SnowballStemmer("english") if self.stem else None
+		
+		self.lemmatize = False		
+		if self.lemmatize:
+			self.lemmatizer = WordNetLemmatizer() if self.lemmatize else None
+
+
+		if self.args.remove_stopwords:
+			stopword_list = nltk.corpus.stopwords.words(args.language)
+			if 'no' in stopword_list:
+				stopword_list.remove('no')
+			if 'not' in stopword_list:
+				stopword_list.remove('not')
+
+			self.stopword_list = stopword_list
+
+		
+	def tokenize_short_text(self, raw_tweet_text):
+
+		tweet_text = raw_tweet_text
+		#tweet_text = tweet_text.strip()
+		#tweet_text = unidecode.unidecode(tweet_text)
 		
 		if self.lowercase:
-			short_text = short_text.lower()
+			tweet_text = tweet_text.lower()
 		
 		if self.tokenizer > 0:
 			if self.tokenizer == 1:
-				uttterance_tokens = word_tokenize(short_text)
+				uttterance_tokens = word_tokenize(tweet_text)
 			if self.tokenizer == 2:
-				uttterance_tokens = wordpunct_tokenize(short_text)
+				uttterance_tokens = wordpunct_tokenize(tweet_text)
 			if self.tokenizer == 3:
-				uttterance_tokens = self.tweet_tokenizer.tokenize(short_text)
+				uttterance_tokens = self.tweet_tokenizer.tokenize(tweet_text)
 			if self.tokenizer == 4:
-				short_text = clean(short_text)
-				short_text = self.remove_accented_chars(short_text)
-				uttterance_tokens = self.tweetokenizer.tokenize(short_text)
+				tweet_text = clean(tweet_text)
+				tweet_text = self.remove_accented_chars(tweet_text)
+				uttterance_tokens = self.tweetokenizer.tokenize(tweet_text)
 				uttterance_tokens = self.remove_duplicated_sequential_words(uttterance_tokens)
 				uttterance_tokens = self.remove_stopwords(uttterance_tokens)
+
+			if self.tokenizer == 5:
+				tweet_text = tokenize(' '.join(self.tweet_tokenizer.tokenize(tweet_text)))
+				return tweet_text
+			
 
 			if self.stem:
 				uttterance_tokens = [list(map(self.stemmer.stem, sub)) for sub in uttterance_tokens]
 			if self.lemmatize:
 				uttterance_tokens = [[self.lemmatizer.lemmatize(tok, pos='v') for tok in sub] for sub in uttterance_tokens]
 			
-			short_text = " ".join(uttterance_tokens)
+			tweet_text = " ".join(uttterance_tokens)
 		
-		return short_text
+		return tweet_text
 
 	def remove_stopwords(self, tokens):
-		filtered_tokens = [token for token in tokens if token not in self.stopword_list]
-		return filtered_tokens
+		if self.args.remove_stopwords:
+			tokens = [token for token in tokens if token not in self.stopword_list]
+		return tokens
 
 	def remove_duplicated_sequential_words(self, uttterance_tokens):
 		i = 0
@@ -104,7 +123,7 @@ class DataTokenizer:
 	def run(self):
 		ds=pd.read_csv(
 			self.input_file,
-			sep='\t'
+			sep=self.args.sep
 		)
 		desc = os.path.split(self.input_file)[1]
 		comments_tokenized = []
@@ -113,16 +132,21 @@ class DataTokenizer:
 			
 		ds[self.text_field] = comments_tokenized
 		output_file = os.path.expanduser(self.output_file)
-		ds.to_csv(output_file, index=False, sep='\t')
+		ds.to_csv(output_file, index=False, sep=self.args.sep)
 
 
 if __name__ == '__main__':
 	parser = argparse.ArgumentParser()
 	parser.add_argument('--input-file', type=lambda x: os.path.expanduser(x))
-	parser.add_argument('--output-file')
+	parser.add_argument('--output-file', type=lambda x: os.path.expanduser(x))
+	parser.add_argument('--sep', default='\t')
+	parser.add_argument('--text-field')
 	parser.add_argument('--language')
-	parser.add_argument('--text-field', type=lambda x: os.path.expanduser(x))
 	parser.add_argument('--tokenizer', type=int, default=4)
+	parser.add_argument('--remove-stopwords', action='store_true')
+	parser.add_argument('--use-lowercase', action='store_true')
+	parser.add_argument('--use-stem', action='store_true')
+	parser.add_argument('--use-lemma', action='store_true')
 	
 	logging.basicConfig(format='%(asctime)s %(message)s', level=logging.DEBUG)
 	

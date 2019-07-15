@@ -224,6 +224,7 @@ class FastTextModel(SupervisedBaseModel):
         if self.dataset.X_unlabeled is not None:
             X = np.append(X, self.dataset.X_unlabeled[self.args.text_field].values, axis=0)
 
+        # TODO: this is wrong, in real systems we don't have this data
         if self.dataset.X_test is not None:
             X = np.append(X, self.dataset.X_test[self.args.text_field].values, axis=0)
 
