@@ -41,7 +41,9 @@ class DataTokenizer:
 		if self.tokenizer==5:
 			self.tweet_tokenizer = TweetTokenizer(strip_handles=False, reduce_len=True)
 
-		self.lowercase = False
+		if self.tokenizer==6:
+			self.tweet_tokenizer = TweetTokenizer(strip_handles=False, reduce_len=True)
+
 		self.stem = False
 		if self.stem:
 			self.stemmer = SnowballStemmer("english") if self.stem else None
@@ -67,7 +69,7 @@ class DataTokenizer:
 		#tweet_text = tweet_text.strip()
 		#tweet_text = unidecode.unidecode(tweet_text)
 		
-		if self.lowercase:
+		if self.args.use_lowercase:
 			tweet_text = tweet_text.lower()
 		
 		if self.tokenizer > 0:
@@ -88,6 +90,9 @@ class DataTokenizer:
 				tweet_text = tokenize(' '.join(self.tweet_tokenizer.tokenize(tweet_text)))
 				return tweet_text
 			
+			if self.tokenizer == 6:
+				tweet_text = clean(' '.join(self.tweet_tokenizer.tokenize(tweet_text)))
+				return tweet_text
 
 			if self.stem:
 				uttterance_tokens = [list(map(self.stemmer.stem, sub)) for sub in uttterance_tokens]
