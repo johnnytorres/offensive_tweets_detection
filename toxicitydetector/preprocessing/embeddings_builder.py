@@ -24,21 +24,27 @@ class EmbeddingsBuilder:
         """
         num_words = len(vocab_dict)
         num_found = 0
+        lines = []
+
+        with open(self.embeddings_path, 'r') as f:
+            header = next(f)
+            num_embeddings, embeddings_dim = header.split(' ')
+            num_embeddings = int(num_embeddings)
+            embeddings_dim = int(embeddings_dim)
+            #out_file.write(header)
+            for _, line in tqdm(enumerate(f), 'loading embeddings', total=num_embeddings):
+                tokens = line.rstrip().split(" ")
+                word = tokens[0]
+                if word in vocab_dict:
+                    num_found += 1
+                    #out_file.write(line)
+                    lines.append(line)
 
         with open(self.small_embeddings_path, 'w') as out_file:
-            with open(self.embeddings_path, 'r') as f:
-                num_embeddings=5000000
-                if not self.args.no_embeddings_header:
-                    header = next(f)
-                    num_embeddings, embeddings_dim = header.split(' ')
-                    num_embeddings = int(num_embeddings)
-                    out_file.write(header)
-                for _, line in tqdm(enumerate(f), 'loading embeddings', total=num_embeddings):
-                    tokens = line.rstrip().split(" ")
-                    word = tokens[0]
-                    if word in vocab_dict:
-                        num_found += 1
-                        out_file.write(line)
+            header = f'{num_found} {embeddings_dim}\n'
+            out_file.write(header)
+            for l in lines:
+                out_file.write(l)
 
         logging.info("Found embeddings for {} out of {} words in vocabulary".format(num_found, num_words))
 
@@ -61,7 +67,7 @@ class EmbeddingsBuilder:
         X = None
 
         for data_file in self.args.data_files:
-            ds = pd.read_csv(data_file, sep='\t', keep_default_na=False)
+            ds = pd.read_csv(data_file, sep=self.args.sep, keep_default_na=False)
             if X is None:
                 X = ds[self.args.text_field].values
             else:
@@ -82,13 +88,15 @@ if __name__ == '__main__':
     logging.basicConfig(format='%(asctime)s %(message)s', level=logging.DEBUG)
     logging.info('initializing task...')
     parser = argparse.ArgumentParser()
+    # 
     parser.add_argument('--data-files', type=lambda x:os.path.expanduser(x), nargs='+')
     parser.add_argument('--embeddings-file', type=lambda x:os.path.expanduser(x))
     parser.add_argument('--output-dir', type=lambda x: os.path.expanduser(x))
-    parser.add_argument('--num-unlabeled', type=int, default=0)
-    parser.add_argument('--text-field', type=str)
+    #parser.add_argument('--num-unlabeled', type=int, default=0)
+    parser.add_argument('--text-field', type=str, default='text')
+    parser.add_argument('--sep', type=str, default=',')
     parser.add_argument('--w2v', action='store_true')
-    parser.add_argument('--no-embeddings-header', action='store_true')
+    #parser.add_argument('--no-embeddings-header', action='store_true')
     builder = EmbeddingsBuilder(args=parser.parse_args())
     builder.run()
     logging.info('task finished...[ok]')
