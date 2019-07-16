@@ -128,7 +128,7 @@ class FastTextModel(SupervisedBaseModel):
         self.epochs = 5
         self.max_len = 50
         self.batch_size = 32
-        self.max_features = 5000
+        self.max_features = None # use all features in the dataset instead of #self.max_features = 5000
         self.embeddings_dim = self.args.embeddings_size
         self.embeddings_matrix = None
         self.ngram_range = 1
@@ -231,8 +231,9 @@ class FastTextModel(SupervisedBaseModel):
         self.tokenizer.fit_on_texts(X)
 
         num_words = len(self.tokenizer.word_index)
+        # to use all features , set to the number of found features
         #self.max_features = np.minimum(self.max_features, num_words) + 1 # add padding
-        #self.max_features = num_words + 1 #add paddings
+        self.max_features = num_words + 1 #add paddings TODO: add oov
 
         self.embeddings_matrix = get_embedding_vectors(
             self.args.embeddings_path,

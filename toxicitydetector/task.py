@@ -142,7 +142,6 @@ class ClassificationTask:
             config = json.dumps(self.args.__dict__)
             f.write(config +'\r')
 
-
 if __name__ == '__main__':
     logging.basicConfig(format='%(asctime)s %(message)s', level=logging.DEBUG)
     logging.info('initializing task...')
@@ -158,7 +157,7 @@ if __name__ == '__main__':
     parser.add_argument('--kfolds', type=int, default=2)
     parser.add_argument('--ngrams', type=int, default=1)
     parser.add_argument('--embeddings-size', type=int, default=300)
-    parser.add_argument('--embeddings-path', type=str, default=None)
+    parser.add_argument('--embeddings-path', type=lambda x: os.path.expanduser(x))
     parser.add_argument('--no-embeddings-header', action='store_true')
     parser.add_argument('--random-state', type=int, default=1)
     parser.add_argument('--predict', action='store_true')
@@ -174,6 +173,7 @@ if __name__ == '__main__':
         task = ClassificationTask(args)
         task.run()
         logging.info(f'running {model} model...[OK]')
+
     logging.info('task finished...[ok]')
 
 
