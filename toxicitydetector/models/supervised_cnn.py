@@ -27,6 +27,7 @@ class CnnModel(FastTextModel):
                 self.embeddings_dim,
                 input_length=self.max_len,
                 #mask_zero=True,
+                trainable=self.args.embeddings_trainable,
                 weights=weights
             )
         )

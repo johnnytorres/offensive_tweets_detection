@@ -17,8 +17,18 @@ class CnnLstmModel(FastTextModel):
 
     def build_model(self):
         print('Build model...')
+        weights = None if self.embeddings_matrix is None else [self.embeddings_matrix]
         model = Sequential()
-        model.add(Embedding(self.max_features, self.embeddings_dim, input_length=self.max_len))
+        model.add(
+            Embedding(
+                self.max_features,
+                self.embeddings_dim,
+                input_length=self.max_len,
+                trainable=self.args.embeddings_trainable,
+                weights = weights,
+                #mask_zero=True  # not useful in CNN like models
+                ),
+            )
         model.add(Dropout(0.25))
         model.add(Conv1D(self.filters,
                          self.kernel_size,

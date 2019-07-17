@@ -28,8 +28,18 @@ class LstmModel(FastTextModel):
 
     def build_model(self):
         print('Build model...')
+        weights = None if self.embeddings_matrix is None else [self.embeddings_matrix]
         model = Sequential()
-        model.add(Embedding(self.max_features, 128))
+        model.add(
+            Embedding(
+                self.max_features,
+                self.embeddings_dim,
+                input_length=self.max_len,
+                #mask_zero=True,
+                weights=weights,
+                trainable=self.args.embeddings_trainable,
+            )
+        )
         model.add(LSTM(128, dropout=0.2, recurrent_dropout=0.2))
         model.add(Dense(self.num_labels, activation='sigmoid'))
 

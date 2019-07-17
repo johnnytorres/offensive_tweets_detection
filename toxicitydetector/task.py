@@ -17,7 +17,7 @@ from toxicitydetector.models.factory import get_model
 class ClassificationTask:
     def __init__(self, args):
         self.args = args
-        self.args.run_id = str(uuid.uuid4())
+        self.args.run_id = datetime.now().strftime("%Y%m%d%H%M%S")
         self.args.initial_timestamp = datetime.now().timestamp()
         self.dataset = DataLoader(self.args)
         self.output_path = args.output_file
@@ -58,7 +58,7 @@ class ClassificationTask:
         cv = KFold(k_folds, random_state=self.args.random_state)
 
         for k, fold in enumerate(cv.split(X_train, y_train)):
-
+            logging.info('MODEL: {}'.format(self.args.model))
             logging.info('training fold {}'.format(k))
             train, valid = fold
             X_kfold, X_valid = X_train[train], X_train[valid]
@@ -131,6 +131,7 @@ class ClassificationTask:
             results_df['id'] = X_test[:, 0]
             results = results.append(results_df, ignore_index=True)
             write_header = not os.path.exists(self.output_path)
+
             # save results
             with open(self.output_path, 'a') as f:
                 results.to_csv(path_or_buf=f, index=False, header= write_header)
@@ -158,13 +159,20 @@ if __name__ == '__main__':
     parser.add_argument('--ngrams', type=int, default=1)
     parser.add_argument('--embeddings-size', type=int, default=300)
     parser.add_argument('--embeddings-path', type=lambda x: os.path.expanduser(x))
+    parser.add_argument('--embeddings-trainable', action='store_true')
     parser.add_argument('--random-state', type=int, default=1)
     parser.add_argument('--predict', action='store_true')
     parser.add_argument('--predict-probs', action='store_true')
     parser.add_argument('--no-output-headers', action='store_true')
     parser.add_argument('--output-file', type=lambda x:os.path.expanduser(x), default='../results/predictions.csv')
     parser.add_argument('--models')
+    parser.add_argument('--append-results', action='store_true')
     args = parser.parse_args()
+
+    # clean previous results
+    if not args.append_results:
+        if os.path.exists(args.output_file):
+            os.remove(args.output_file)
 
     for model in args.models.split(','):
         logging.info(f'running {model} model...')

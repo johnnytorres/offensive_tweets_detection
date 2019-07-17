@@ -148,7 +148,7 @@ class FastTextModel(SupervisedBaseModel):
                 self.max_features,
                 self.embeddings_dim,
                 input_length=self.max_len,
-                #trainable=False,
+                trainable=self.args.embeddings_trainable,
                 weights = weights,
                 #mask_zero=True  # not useful in CNN like models
 
