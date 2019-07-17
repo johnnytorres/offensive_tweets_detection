@@ -124,7 +124,7 @@ class FastTextModel(SupervisedBaseModel):
     def __init__(self, task):
         super(FastTextModel, self).__init__(task)
         self.args = task.args
-        self.epochs = 5
+        self.epochs = self.args.epochs
         self.max_len = 50
         self.batch_size = 32
         self.max_features = None # use all features in the dataset instead of #self.max_features = 5000

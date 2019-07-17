@@ -156,6 +156,7 @@ if __name__ == '__main__':
     parser.add_argument('--use-allfeats', action='store_true')
     parser.add_argument('--num-unlabeled', type=int, default=0)
     parser.add_argument('--kfolds', type=int, default=2)
+    parser.add_argument('--epochs', type=int, default=2)
     parser.add_argument('--ngrams', type=int, default=1)
     parser.add_argument('--embeddings-size', type=int, default=300)
     parser.add_argument('--embeddings-path', type=lambda x: os.path.expanduser(x))
