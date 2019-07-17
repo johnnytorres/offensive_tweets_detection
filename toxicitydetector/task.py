@@ -158,7 +158,6 @@ if __name__ == '__main__':
     parser.add_argument('--ngrams', type=int, default=1)
     parser.add_argument('--embeddings-size', type=int, default=300)
     parser.add_argument('--embeddings-path', type=lambda x: os.path.expanduser(x))
-    parser.add_argument('--no-embeddings-header', action='store_true')
     parser.add_argument('--random-state', type=int, default=1)
     parser.add_argument('--predict', action='store_true')
     parser.add_argument('--predict-probs', action='store_true')

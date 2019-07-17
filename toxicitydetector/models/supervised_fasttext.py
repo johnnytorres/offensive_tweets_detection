@@ -67,7 +67,7 @@ def add_ngram(sequences, token_indice, ngram_range=2):
     return new_sequences
 
 
-def get_embedding_vectors(embeddings_path, vocab_dict, num_words, embeddings_dim, small_embedding_path=None, no_header=False):
+def get_embedding_vectors(embeddings_path, vocab_dict, num_words, embeddings_dim, small_embedding_path=None):
     """
     Load embedding vectors from a .txt file.
     Optionally limit the vocabulary to save memory. `vocab` should be a set.
@@ -89,9 +89,8 @@ def get_embedding_vectors(embeddings_path, vocab_dict, num_words, embeddings_dim
     small_embeddings = []
 
     with tf.gfile.GFile(embeddings_path) as f:
-        if not no_header:
-            num_embeddings, _ = next(f).split(' ')
-            num_embeddings = int(num_embeddings)
+        num_embeddings, _ = next(f).split(' ')
+        num_embeddings = int(num_embeddings)
         for _, line in tqdm(enumerate(f), 'loading embeddings'):
             tokens = line.rstrip().split(" ")
             word = tokens[0]
@@ -233,14 +232,14 @@ class FastTextModel(SupervisedBaseModel):
         num_words = len(self.tokenizer.word_index)
         # to use all features , set to the number of found features
         #self.max_features = np.minimum(self.max_features, num_words) + 1 # add padding
-        self.max_features = num_words + 1 #add paddings TODO: add oov
+        #TODO: add oov, use max_features
+        self.max_features = num_words + 1 #add paddings 
 
         self.embeddings_matrix = get_embedding_vectors(
             self.args.embeddings_path,
             self.tokenizer.word_index,
             self.max_features,
-            self.embeddings_dim,
-            no_header=self.args.no_embeddings_header
+            self.embeddings_dim
         )
 
         X = self.tokenizer.texts_to_sequences(X_text)
