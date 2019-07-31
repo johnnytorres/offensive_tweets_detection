@@ -96,7 +96,7 @@ python -m toxicitydetector.task \
 #-----------------------------------------------------------
 
 
-# TODO: evaluate with data of the tweets
+# TODO: evaluate with preprocessing of the tweets
 #python -m toxicitydetector.task \
 #    --train-path=${TRAIN_DIR}/offenseval_preprocessed.tsv \
 #    --test-path=${TEST_DIR}/testset_taska_preprocessed.tsv \
@@ -106,7 +106,7 @@ python -m toxicitydetector.task \
 #    --kfolds=10 \
 #    --model=cnn
 #
-## prediction with best data / model
+## prediction with best preprocessing / model
 #
 #python -m toxicitydetector.task \
 #    --train-path=${TRAIN_DIR}/offenseval-training-v1.tsv \

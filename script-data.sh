@@ -37,7 +37,7 @@ then
     unzip -d ${EMBEDDINGS_DIR} ${EMBEDDINGS_FILE}.zip
 fi
 
-python -m toxicitydetector.data.embeddings_builder \
+python -m toxicitydetector.preprocessing.embeddings_builder \
     --data-files \
     ${TRAIN_DIR}/offenseval-training-v1.tsv \
     ${TEST_DIR}/testset-taska.tsv \
@@ -51,7 +51,7 @@ python -m toxicitydetector.data.embeddings_builder \
 # train with words in the dataset
 
 EMBEDDINGS_DIR=~/data/embeddings/w2v
-python -m toxicitydetector.data.embeddings_builder \
+python -m toxicitydetector.preprocessing.embeddings_builder \
     --data-files \
     ${TRAIN_DIR}/offenseval-training-v1.tsv \
     ${TEST_DIR}/testset-taska.tsv \
@@ -63,7 +63,7 @@ python -m toxicitydetector.data.embeddings_builder \
 
 # TODO: future work with Glove
 #EMBEDDINGS_DIR=~/data/embeddings/glove
-#python -m toxicitydetector.data.embeddings_builder \
+#python -m toxicitydetector.preprocessing.embeddings_builder \
 #    --data-files \
 #    ${TRAIN_DIR}/offenseval-training-v1.tsv \
 #    ${TEST_DIR}/testset-taska.tsv \
@@ -74,9 +74,31 @@ python -m toxicitydetector.data.embeddings_builder \
 #    --no-embeddings-header
 
 
-# TODO: tweets data
+# TODO: tweets preprocessing
 
-
+#python -m toxicitydetector.preprocessing.text_tokenizer \
+#    --input-file=${TRAIN_DIR}/offenseval-training-v1.tsv \
+#    --output-file=${TRAIN_DIR}/offenseval_preprocessed.tsv \
+#    --language=english \
+#    --text-field=tweet
+#
+#python -m toxicitydetector.preprocessing.text_tokenizer \
+#    --input-file=${TEST_DIR}/testset-taska.tsv \
+#    --output-file=${TEST_DIR}/testset_taska_preprocessed.tsv \
+#    --language=english \
+#    --text-field=tweet
+#
+#python -m toxicitydetector.preprocessing.text_tokenizer \
+#    --input-file=${TEST_DIR}/testset-taskb.tsv \
+#    --output-file=${TEST_DIR}/testset_taskb_preprocessed.tsv \
+#    --language=english \
+#    --text-field=tweet
+#
+#python -m toxicitydetector.preprocessing.text_tokenizer \
+#    --input-file=${TEST_DIR}/testset-taskc.tsv \
+#    --output-file=${TEST_DIR}/testset_taskc_preprocessed.tsv \
+#    --language=english \
+#    --text-field=tweet
 
 
 
