@@ -165,7 +165,7 @@ if __name__ == '__main__':
     parser.add_argument('--predict', action='store_true')
     parser.add_argument('--predict-probs', action='store_true')
     parser.add_argument('--no-output-headers', action='store_true')
-    parser.add_argument('--output-file', type=lambda x:os.path.expanduser(x), default='../results/predictions.csv')
+    parser.add_argument('--output-file', type=lambda x:os.path.expanduser(x))
     parser.add_argument('--models')
     parser.add_argument('--append-results', action='store_true')
     args = parser.parse_args()
